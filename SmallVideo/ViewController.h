@@ -10,6 +10,7 @@
 
 @interface ViewController : UIViewController
 
+- (IBAction)smallVideo:(UIButton *)sender;
 
 @end
 
