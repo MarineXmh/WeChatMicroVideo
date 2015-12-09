@@ -25,9 +25,9 @@
     
     if (self) {
         CGFloat viewW = SCREEN_WIDTH;
-        CGFloat viewH = SCREEN_HEIGHT * 0.6;
+        CGFloat viewH = SCREEN_HEIGHT * 0.64;
         CGFloat viewX = 0;
-        CGFloat viewY = SCREEN_HEIGHT * 0.4;
+        CGFloat viewY = SCREEN_HEIGHT * 0.36;
         self.frame = CGRectMake(0, SCREEN_HEIGHT, viewW, viewH);
         [UIView animateWithDuration:0.3 animations:^{
             self.frame = CGRectMake(viewX, viewY, viewW, viewH);
@@ -42,7 +42,7 @@
 
 - (void)setButtons {
     self.recordBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.recordBtn.frame = CGRectMake(self.center.x - 20, self.frame.size.height - 50, 40, 40);
+    self.recordBtn.frame = CGRectMake(self.center.x - 20, self.frame.size.height - 48, 40, 40);
     self.recordBtn.layer.cornerRadius = self.recordBtn.frame.size.width / 2;
     self.recordBtn.layer.masksToBounds = YES;
     self.recordBtn.layer.borderColor = [UIColor greenColor].CGColor;
@@ -53,7 +53,7 @@
     [self addSubview:self.recordBtn];
     
     self.exitBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.exitBtn.frame = CGRectMake(self.frame.size.width - 50, self.frame.size.height - 50, 40, 40);
+    self.exitBtn.frame = CGRectMake(self.frame.size.width - 50, self.frame.size.height - 48, 40, 40);
     [self.exitBtn setTitle:@"退出" forState:UIControlStateNormal];
     [self.exitBtn.titleLabel setFont:[UIFont systemFontOfSize:14.0]];
     [self.exitBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -62,7 +62,7 @@
 }
 
 - (void)setTimeLine {
-    self.timeLineView = [[UIView alloc] initWithFrame:CGRectMake(0, self.frame.size.height - 56, SCREEN_WIDTH, 1)];
+    self.timeLineView = [[UIView alloc] initWithFrame:CGRectMake(0, self.frame.size.width * 3 / 4, SCREEN_WIDTH, 1)];
     self.timeLineView.backgroundColor = [UIColor greenColor];
     [self addSubview:self.timeLineView];
 }
@@ -89,8 +89,12 @@
     [self setPromptLable];
     self.recordBtn.layer.borderColor = [UIColor clearColor].CGColor;
     [UIView animateWithDuration:10.0 animations:^{
-        self.timeLineView.frame = CGRectMake(SCREEN_WIDTH / 2, self.frame.size.height - 56, 0, 1);
+        self.timeLineView.frame = CGRectMake(SCREEN_WIDTH / 2, self.frame.size.width * 3 / 4, 0, 1);
     } completion:^(BOOL finished) {
+        [self finishRecord];
+        if ([self.delegate respondsToSelector:@selector(finishRecord)]) {
+            [self.delegate finishRecord];
+        }
         [[NSNotificationCenter defaultCenter] postNotificationName:@"animationEnd" object:nil];
     }];
     if ([self.delegate respondsToSelector:@selector(startRecord)]) {
@@ -103,6 +107,10 @@
     [self.timeLineView removeFromSuperview];
     [self.promptLable removeFromSuperview];
     self.recordBtn.layer.borderColor = [UIColor greenColor].CGColor;
+    if ([self.delegate respondsToSelector:@selector(finishRecord)]) {
+        [self.delegate finishRecord];
+    }
+    [self exit];
 }
 
 - (void)cancelRecord {
@@ -114,7 +122,7 @@
 
 - (void)exit {
     [UIView animateWithDuration:0.3 animations:^{
-        self.frame  = self.frame = CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT * 0.6);
+        self.frame  = self.frame = CGRectMake(0, SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT * 0.64);
     } completion:^(BOOL finished) {
         
     }];

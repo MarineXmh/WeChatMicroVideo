@@ -11,6 +11,8 @@
 @interface ViewController : UIViewController
 
 - (IBAction)smallVideo:(UIButton *)sender;
+- (IBAction)convertToMP4:(UIButton *)sender;
+- (IBAction)playVideo:(UIButton *)sender;
 
 @end
 

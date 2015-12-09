@@ -46,7 +46,7 @@
 -(void)setRecVideoAndVideoPreviewLayer:(UIView *)view {
     _view = view;
     
-    _subView = [[UIView alloc] initWithFrame:CGRectMake(0, 10, SCREEN_WIDTH, (SCREEN_WIDTH * 3 / 4))];
+    _subView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, (SCREEN_WIDTH * 3 / 4))];
     [_subView sendSubviewToBack:view];
     [view addSubview:_subView];
     
@@ -81,7 +81,7 @@
     preLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     //    preLayer.clipsToBounds = YES;
     //设置图层的大小
-    preLayer.frame = CGRectMake(0, 10, [UIScreen mainScreen].bounds.size.width, ([UIScreen mainScreen].bounds.size.width * 3 / 4));
+    preLayer.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, ([UIScreen mainScreen].bounds.size.width * 3 / 4));
     //添加到view上
     [_subView.layer addSublayer:preLayer];
     //五，开始会话
@@ -131,43 +131,6 @@
         filesize = 1.0*size/1024;
     }
     return filesize;
-}
-
-#pragma mark - AVCaptureFileOutputRecordingDelegate 录制完成代理
-- (void)captureOutput:(AVCaptureFileOutput *)captureOutput didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL fromConnections:(NSArray *)connections error:(NSError *)error {
-    //    AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:outputFileURL options:nil];
-    //    NSArray *compatiblePresets = [AVAssetExportSession exportPresetsCompatibleWithAsset:avAsset];
-    //    NSLog(@"%@",compatiblePresets);
-    //
-    //    if ([compatiblePresets containsObject:AVAssetExportPresetHighestQuality]) {
-    //        AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:avAsset presetName:AVAssetExportPresetMediumQuality];
-    //        exportSession.outputURL = [NSURL fileURLWithPath:_voicePath];
-    //        exportSession.outputFileType = AVFileTypeMPEG4;
-    //        exportSession.shouldOptimizeForNetworkUse = YES;
-    //        [exportSession exportAsynchronouslyWithCompletionHandler:^(void){
-    //             switch (exportSession.status) {
-    //                 case AVAssetExportSessionStatusUnknown:
-    //                     NSLog(@"AVAssetExportSessionStatusUnknown");
-    //                     break;
-    //                 case AVAssetExportSessionStatusWaiting:
-    //                     NSLog(@"AVAssetExportSessionStatusWaiting");
-    //                     break;
-    //                 case AVAssetExportSessionStatusExporting:
-    //                     NSLog(@"AVAssetExportSessionStatusExporting");
-    //                     break;
-    //                 case AVAssetExportSessionStatusCompleted:
-    //                     NSLog(@"AVAssetExportSessionStatusCompleted");
-    //                     break;
-    //                 case AVAssetExportSessionStatusFailed:
-    //                     NSLog(@"AVAssetExportSessionStatusFailed");
-    //                     [self startPlayer];
-    //                     break;
-    //             }
-    //         }];
-    //    }
-    //[self startPlayer];
-    CGFloat videoLength = [self getVideoLength:outputFileURL];
-    NSLog(@"videoLength = %.2f",videoLength);
 }
 
 @end
