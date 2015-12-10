@@ -35,7 +35,7 @@
 }
 
 - (IBAction)smallVideo:(UIButton *)sender {
-    self.smallVideoView = [[SmallVideoView alloc] init];
+    self.smallVideoView = [SmallVideoView sharedSmallVideoView];
     self.smallVideoView.delegate = self;
     [self.view addSubview:self.smallVideoView];
     self.videoModel = [[VideoModel alloc] init];
@@ -63,34 +63,43 @@
                  case AVAssetExportSessionStatusExporting:
                      NSLog(@"AVAssetExportSessionStatusExporting");
                      break;
+                 case AVAssetExportSessionStatusFailed:
+                     NSLog(@"AVAssetExportSessionStatusFailed error:%@", exportSession.error);
+                     break;
                  case AVAssetExportSessionStatusCompleted:
                      NSLog(@"AVAssetExportSessionStatusCompleted");
                      NSLog(@"%f", [self getFileSize:self.mp4FilePath]);
-                     break;
-                 case AVAssetExportSessionStatusFailed:
-                     NSLog(@"AVAssetExportSessionStatusFailed error:%@", exportSession.error);
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                         AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:self.mp4FilePath]];
+                         self.player = [AVPlayer playerWithPlayerItem:playerItem];
+                         AVPlayerLayer *playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
+                         playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+                         playerLayer.frame = CGRectMake(0, [UIScreen mainScreen].bounds.size.height - ([UIScreen mainScreen].bounds.size.width * 3 / 4), [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 3 / 4);
+                         [self.view.layer addSublayer:playerLayer];
+                         self.playerLayer = playerLayer;
+                     });
                      break;
              }
          }];
     }
     
-    UIButton *playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    playBtn.frame = CGRectMake(0, [UIScreen mainScreen].bounds.size.height - ([UIScreen mainScreen].bounds.size.width * 3 / 4), [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 3 / 4);
-    [playBtn setTitle:@"播放" forState:UIControlStateNormal];
-    [playBtn setImage:[self getImage:self.filePath] forState:UIControlStateNormal];
-    [playBtn addTarget:self action:@selector(playVideo:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:playBtn];
+//    UIButton *playBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//    playBtn.frame = CGRectMake(0, [UIScreen mainScreen].bounds.size.height - ([UIScreen mainScreen].bounds.size.width * 3 / 4), [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 3 / 4);
+//    [playBtn setImage:[self getImage:self.filePath] forState:UIControlStateNormal];
+//    [playBtn addTarget:self action:@selector(playVideo:) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:playBtn];
 }
 
 - (IBAction)playVideo:(UIButton *)sender {
-    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:self.mp4FilePath]];
-    self.player = [AVPlayer playerWithPlayerItem:playerItem];
-    AVPlayerLayer *playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
-    playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-    playerLayer.frame = CGRectMake(0, [UIScreen mainScreen].bounds.size.height - ([UIScreen mainScreen].bounds.size.width * 3 / 4), [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 3 / 4);
-    [self.view.layer addSublayer:playerLayer];
+//    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithURL:[NSURL fileURLWithPath:self.mp4FilePath]];
+//    self.player = [AVPlayer playerWithPlayerItem:playerItem];
+//    AVPlayerLayer *playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
+//    playerLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+//    playerLayer.frame = CGRectMake(0, [UIScreen mainScreen].bounds.size.height - ([UIScreen mainScreen].bounds.size.width * 3 / 4), [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width * 3 / 4);
+//    [self.view.layer addSublayer:playerLayer];
+    self.player.volume = 0;
     [self.player play];//开始播放
-    self.playerLayer = playerLayer;
+//    self.playerLayer = playerLayer;
 }
 
 - (void)startRecord {
@@ -115,7 +124,7 @@
 
 
 //此方法可以获取文件的大小，返回的是单位是KB
-- (CGFloat) getFileSize:(NSString *)path
+- (CGFloat)getFileSize:(NSString *)path
 {
     NSFileManager *fileManager = [[NSFileManager alloc] init];
     float filesize = -1.0;
@@ -135,7 +144,6 @@
     AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:url options:opts];
     AVAssetImageGenerator *generator = [AVAssetImageGenerator assetImageGeneratorWithAsset:urlAsset];
     generator.appliesPreferredTrackTransform = YES;
-    generator.maximumSize = CGSizeMake(1280, 720);
     NSError *error = nil;
     CGImageRef img = [generator copyCGImageAtTime:CMTimeMake(0, 1) actualTime:NULL error:&error];
     UIImage *image = [UIImage imageWithCGImage: img];

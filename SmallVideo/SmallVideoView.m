@@ -20,6 +20,23 @@
     // Drawing code
 }
 */
++ (SmallVideoView *)sharedSmallVideoView {
+    static SmallVideoView *sharedSmallVideoView = nil;
+    static dispatch_once_t predicate;
+    dispatch_once(&predicate, ^{
+        sharedSmallVideoView = [[self alloc] init];
+    });
+    CGFloat viewW = SCREEN_WIDTH;
+    CGFloat viewH = SCREEN_HEIGHT * 0.64;
+    CGFloat viewX = 0;
+    CGFloat viewY = SCREEN_HEIGHT * 0.36;
+    sharedSmallVideoView.frame = CGRectMake(0, SCREEN_HEIGHT, viewW, viewH);
+    [UIView animateWithDuration:0.3 animations:^{
+        sharedSmallVideoView    .frame = CGRectMake(viewX, viewY, viewW, viewH);
+    }];
+    return sharedSmallVideoView;
+}
+
 - (instancetype)init {
     self = [super init];
     

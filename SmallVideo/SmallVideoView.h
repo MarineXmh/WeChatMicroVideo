@@ -25,4 +25,6 @@
 @property (nonatomic, strong) UILabel *promptLable;
 @property (nonatomic, weak) id<SmallVideoViewDelegate> delegate;
 
++ (SmallVideoView *)sharedSmallVideoView;
+
 @end
